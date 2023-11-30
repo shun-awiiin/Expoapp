@@ -1,20 +1,137 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons'; // expoの場合、またはreact-native-vector-iconsを使う
+import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Firebaseの認証機能をインポート
 
-export default function App() {
+import LoginScreen from './screens/LoginScreen';
+import HomeScreen from './screens/HomeScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import VideoScreen from './screens/VideoLibraryScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import TacticsBoardScreen from './screens/TacticsBoardScreen'; // スクリーンをインポート
+import BoardScreen from './screens/BoardScreen'; // このパスはFeedbackScreenの場所に応じて変更してください
+import EditProfileScreen from './screens/EditProfileScreen'; // 適切なパスを使用
+
+
+
+// 他のスクリーンのインポートが必要な場合はここに追加
+
+import { firebaseApp } from './screens/firebaseConfig';
+
+const auth = getAuth(firebaseApp); // Firebaseアプリインスタンスを使用してAuthを取得
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const ProfileStack = createStackNavigator();
+
+const ProfileStackScreen = () => (
+  <ProfileStack.Navigator>
+    <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{headerShown: false, // これによりヘッダーが非表示になります
+  }} />
+    <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
+  </ProfileStack.Navigator>
+);
+
+
+
+// メインコンテンツスタック
+const MainContentStack = () => (
+  <Tab.Navigator initialRouteName="Home">
+    <Tab.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="home-outline" color={color} size={size} />
+        ),
+        headerShown: false, // これによりヘッダーが非表示になります
+      }}
+    />
+    <Tab.Screen
+      name="Video"
+      component={VideoScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="videocam-outline" color={color} size={size} />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Tactics"
+      component={TacticsBoardScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="clipboard-outline" color={color} size={size} />
+        ),
+      }}
+    />
+     <Tab.Screen
+      name="Board"
+      component={BoardScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="chatbox-ellipses-outline" color={color} size={size} />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Profile"
+      component={ProfileScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="person-outline" color={color} size={size} />
+        ),
+    
+      }}
+    />
+    {/* 他のタブスクリーンをここに追加 */}
+  </Tab.Navigator>
+);
+
+// 起動時スタック（ログインと登録）
+const AuthStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Screen name="Register" component={RegisterScreen} />
+    <Stack.Screen name="Home" component={HomeScreen} />
+  </Stack.Navigator>
+);
+const App = () => {
+  // ユーザーログイン状態を表す状態変数とセッター関数
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // ログイン状態を監視するリスナーをセットアップ
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        // ユーザーがログインしている場合
+        setIsLoggedIn(true);
+      } else {
+        // ユーザーがログインしていない場合
+        setIsLoggedIn(false);
+      }
+    });
+
+    // コンポーネントがアンマウントされるときにリスナーを解除
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      {isLoggedIn ? (
+        // ログイン状態の場合は MainContentStack を使用
+        <MainContentStack />
+      ) : (
+        // ログイン状態でない場合は AuthStack を使用
+        <AuthStack />
+      )}
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
