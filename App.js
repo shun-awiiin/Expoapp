@@ -13,7 +13,9 @@ import ProfileScreen from './screens/ProfileScreen';
 import TacticsBoardScreen from './screens/TacticsBoardScreen'; // スクリーンをインポート
 import BoardScreen from './screens/BoardScreen'; // このパスはFeedbackScreenの場所に応じて変更してください
 import EditProfileScreen from './screens/EditProfileScreen'; // 適切なパスを使用
-
+import ChatScreen from './screens/ChatScreen';
+import ChatDetailScreen from './subscreen/ChatDetailScreen';
+import IndividualChatScreen from './subscreen/IndividualChatScreen';
 
 
 // 他のスクリーンのインポートが必要な場合はここに追加
@@ -35,6 +37,29 @@ const ProfileStackScreen = () => (
   </ProfileStack.Navigator>
 );
 
+// ChatStackを追加して、ChatScreenとChatDetailScreenのナビゲーションを管理します。
+const ChatStack = createStackNavigator();
+
+const ChatStackScreen = () => (
+  <ChatStack.Navigator>
+    <ChatStack.Screen 
+      name="Chat" 
+      component={ChatScreen} 
+      options={{ headerShown: false }} 
+    />
+    <ChatStack.Screen 
+      name="ChatDetail" 
+      component={ChatDetailScreen} 
+      // ここでオプションを設定できます。
+      // 例: options={{ title: 'Chat Details' }}
+    />
+    <ChatStack.Screen 
+      name="IndividualChatScreen" 
+      component={IndividualChatScreen}
+      options={({ route }) => ({ title: route.params.buyerName })} // オプションで動的にヘッダータイトルを設定
+    />
+  </ChatStack.Navigator>
+);
 
 
 // メインコンテンツスタック
@@ -75,6 +100,16 @@ const MainContentStack = () => (
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="chatbox-ellipses-outline" color={color} size={size} />
         ),
+      }}
+    />
+     <Tab.Screen
+      name="ChatStack"
+      component={ChatStackScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="chatbox-ellipses-outline" color={color} size={size} />
+        ),
+    
       }}
     />
     <Tab.Screen
