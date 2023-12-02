@@ -5,9 +5,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; // expoの場合、またはreact-native-vector-iconsを使う
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Firebaseの認証機能をインポート
 
-import LoginScreen from './screens/LoginScreen';
+import LoginScreen from './UserScreen/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
-import RegisterScreen from './screens/RegisterScreen';
+import RegisterScreen from './UserScreen/RegisterScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatScreen from './screens/ChatScreen';
 import ChatDetailScreen from './Chatsubscreen/ChatDetailScreen';
