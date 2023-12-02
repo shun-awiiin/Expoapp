@@ -29,7 +29,7 @@ const ProfileScreen = () => {
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
         <Image
-          source={{ uri: 'https://pbs.twimg.com/profile_images/1546537073985060864/gAv-MbUp_400x400.jpg' }}
+          source={{ uri: 'https://ewmqoegsx4q.exactdn.com/wp-content/uploads/2021/07/S__29966339-e1633923620690.jpg?strip=all&lossy=1&ssl=1' }}
           style={styles.profileImage}
         />
         <View style={styles.statsContainer}>
@@ -48,8 +48,8 @@ const ProfileScreen = () => {
         </View>
       </View>
       <View style={styles.bioContainer}>
-        <Text style={styles.bioText}>石関</Text>
-        <Text style={styles.bioText}>@satoshi_ishizeki25</Text>
+        <Text style={styles.bioText}>菊池 駿</Text>
+        <Text style={styles.bioText}>@shun_kikuchi</Text>
         <Text style={styles.bioDescription}>
           アクアウィンナチュラルグッズボード
           過去30日間に179件のアクションにリーチしました。
