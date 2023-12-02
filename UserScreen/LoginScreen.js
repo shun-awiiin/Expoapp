@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import app from './firebaseConfig'; // 正しいパスに置き換えてください
+import app from '../screens/firebaseConfig'; // 正しいパスに置き換えてください
 
 const auth = getAuth(app);
 

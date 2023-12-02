@@ -1,67 +1,134 @@
-import React from 'react';
-import { View, Text, StyleSheet,Image } from 'react-native';
-import useDailyPhrase from '../subscreen/useDailyPhrase';
-import AdminMessage from '../subscreen/AdminMessage';
-import PopularVideosScreen from '../subscreen/PopularVideosScreen';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity ,ScrollView } from 'react-native';
+import { firebaseApp } from './firebaseConfig'; // 正しいパスでFirebase設定をインポート
+import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
 
+
+
+// 画像やブログのデータを取得するフェッチ関数をここに定義
+const imageUris = [
+  'https://8301440.fs1.hubspotusercontent-na1.net/hubfs/8301440/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202023-11-29%2016.50.36.png',
+  'https://8301440.fs1.hubspotusercontent-na1.net/hubfs/8301440/FV2-1.png',
+  'https://8301440.fs1.hubspotusercontent-na1.net/hubfs/8301440/%E3%83%A1%E3%83%BC%E3%83%AB1-Sep-04-2023-06-58-52-2100-AM.png',
+  // 他の画像URI
+];
 
 const HomeScreen = () => {
-  const dailyPhrase = useDailyPhrase();
+  // 各種データをステートに保持します
+  const [blogPosts, setBlogPosts] = useState([]);
+  const db = getFirestore(firebaseApp);
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+  useEffect(() => {
+    const q = query(collection(db, 'blog')); // 'blog'はFirestore内のコレクション名
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const blogs = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setBlogPosts(blogs);
+    });
+
+    return () => unsubscribe();
+  }, [db]);
+
+  // フィルターバー、イメージスライダー、ブログリストのヘッダーコンポーネント
+  const renderListHeader = () => (
+    <View>
+      {/* ロゴ */}
+      <View style={styles.logoContainer}>
         <Image
-          source={{ uri: 'https://pbs.twimg.com/media/FzETt2QaQAAhPCO?format=jpg&name=large' }}
-          style={styles.headerImage}
+          source={{ uri: 'https://storage.googleapis.com/expo-mobile-5e037.appspot.com/2.png' }} // ロゴ画像のURLを指定
+          style={styles.logo}
+          resizeMode="contain"
         />
       </View>
-      <View style={styles.catchPhraseContainer}>
-        <Text style={styles.mainText}>just know myself</Text>
-        <Text style={styles.subText}>〜己を知るだけ〜</Text>
+      {/* フィルターバー */}
+      <View style={styles.filterBar}>
+        <TouchableOpacity style={styles.filterButton}><Text>eBay</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.filterButton}><Text>EXPO</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.filterButton}><Text>Awiiin</Text></TouchableOpacity>
       </View>
-      <Text style={styles.dailyPhrase}>{dailyPhrase}</Text>
-      <AdminMessage message="今日も一日頑張りましょう！" /> 
-      <PopularVideosScreen />
-      {/* その他のホーム画面の要素 */}
+      {/* イメージスライダー */}
+       <ScrollView
+        horizontal={true}
+        pagingEnabled={true}
+        showsHorizontalScrollIndicator={false}
+      >
+        {imageUris.map((uri, index) => (
+          <Image key={String(index)} source={{ uri }} style={styles.image} />
+        ))}
+      </ScrollView>
     </View>
+  );
+
+  return (
+    <FlatList
+      data={[...blogPosts]}
+      keyExtractor={(item, index) => String(index)}
+      ListHeaderComponent={renderListHeader}
+      renderItem={({ item }) => (
+        <View style={styles.card}>
+          <Image source={{ uri: item.thumbnail }} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>{item.title}</Text>
+          <Text style={styles.cardContent}>{item.content}</Text>
+        </View>
+      )}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 30,
-    backgroundColor: '#fff',
-  },
-  header: {
-    height: 50, // 画像の高さを適切に設定
-    justifyContent: 'center',
+  logoContainer: {
+    height: 60, // 適宜調整
     alignItems: 'center',
-    backgroundColor: '#ffffff', // ヘッダーの背景色
+    justifyContent: 'center',
+    backgroundColor: '#fff', // ロゴの背景色
+    padding: 10,
   },
-  headerImage: {
-    width: '40%', // 画像をヘッダーの幅いっぱいに表示
-    height: '65%', // 画像の高さをヘッダーいっぱいに表示
+  logo: {
+    height: '100%', // ロゴの高さに合わせて調整
+    width: '50%', // ロゴの幅に合わせて調整
   },
-  catchPhraseContainer: {
-    alignItems: 'center', // 中央揃え
-    margin: 5,
+  filterBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+    backgroundColor: '#f0f0f0'
   },
-  mainText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 1, // サブテキストとの間隔
+  filterButton: {
+    padding: 10,
+    backgroundColor: '#ddd',
+    borderRadius: 5
   },
-  subText: {
-    fontSize: 12,
-    color: '#666', // サブテキストを薄く表示
+  imageSlider: {
+    height: 200, // 適宜調整
+    // その他のスタイリング
   },
-  dailyPhrase: {
-    color: '#FFD700', // テキストカラーをゴールドに設定
+  card: {
+    margin: 10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    overflow: 'hidden',
+    // その他のスタイリング
+  },
+  cardImage: {
+    width: '100%',
+    height: 200, // 適宜調整
+    // その他のスタイリング
+  },
+  cardTitle: {
     fontSize: 18,
-    textAlign: 'center',
-    margin: 3,
+    fontWeight: 'bold',
+    // その他のスタイリング
+  },
+  cardContent: {
+    fontSize: 14,
+    // その他のスタイリング
+  },
+  image: {
+    width: 300, // 画像の幅
+    height: 200, // 画像の高さ
+    marginRight: 10, // 画像間のマージン
   },
   // その他のスタイリング
 });
