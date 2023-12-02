@@ -62,19 +62,16 @@ const HomeScreen = () => {
   );
 
   return (
-    <FlatList
+  <FlatList
   data={blogPosts}
   keyExtractor={item => item.id}
   ListHeaderComponent={renderListHeader} // ここでヘッダーコンポーネントを指定
   renderItem={({ item }) => (
     <TouchableOpacity style={styles.card} onPress={() => Linking.openURL(item.post)}>
       <Image source={{ uri: item.thumbnailUrl }} style={styles.cardImage} />
-      <Text style={styles.title}>{item.post}</Text> 
     </TouchableOpacity>
   )}
-/>
-
-
+  />
   );
 };
 
