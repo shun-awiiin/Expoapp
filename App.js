@@ -8,11 +8,10 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Firebaseの認�
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import VideoScreen from './screens/VideoLibraryScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatScreen from './screens/ChatScreen';
-import ChatDetailScreen from './subscreen/ChatDetailScreen';
-import IndividualChatScreen from './subscreen/IndividualChatScreen';
+import ChatDetailScreen from './Chatsubscreen/ChatDetailScreen';
+import IndividualChatScreen from './Chatsubscreen/IndividualChatScreen';
 
 
 // 他のスクリーンのインポートが必要な場合はここに追加
@@ -23,9 +22,6 @@ const auth = getAuth(firebaseApp); // Firebaseアプリインスタンスを使�
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
-const ProfileStack = createStackNavigator();
-
 // ChatStackを追加して、ChatScreenとChatDetailScreenのナビゲーションを管理します。
 const ChatStack = createStackNavigator();
 
@@ -62,15 +58,6 @@ const MainContentStack = () => (
           <Ionicons name="home-outline" color={color} size={size} />
         ),
         headerShown: false, // これによりヘッダーが非表示になります
-      }}
-    />
-    <Tab.Screen
-      name="Video"
-      component={VideoScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="videocam-outline" color={color} size={size} />
-        ),
       }}
     />
      <Tab.Screen
