@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity ,ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity ,ScrollView, Linking } from 'react-native';
 import { firebaseApp } from './firebaseConfig'; // 正しいパスでFirebase設定をインポート
 import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
 
@@ -19,18 +19,18 @@ const HomeScreen = () => {
   const db = getFirestore(firebaseApp);
 
   useEffect(() => {
-    const q = query(collection(db, 'blog')); // 'blog'はFirestore内のコレクション名
+    const q = query(collection(db, 'blog'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const blogs = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        post: doc.data().post, // 'post' がドキュメント内のフィールド名になります
+        thumbnailUrl: doc.data().thumbnailUrl // 'thumbnailUrl' がドキュメント内のフィールド名になります
       }));
       setBlogPosts(blogs);
     });
-
+  
     return () => unsubscribe();
   }, [db]);
-
   // フィルターバー、イメージスライダー、ブログリストのヘッダーコンポーネント
   const renderListHeader = () => (
     <View>
@@ -63,17 +63,18 @@ const HomeScreen = () => {
 
   return (
     <FlatList
-      data={[...blogPosts]}
-      keyExtractor={(item, index) => String(index)}
-      ListHeaderComponent={renderListHeader}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <Image source={{ uri: item.thumbnail }} style={styles.cardImage} />
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.cardContent}>{item.content}</Text>
-        </View>
-      )}
-    />
+  data={blogPosts}
+  keyExtractor={item => item.id}
+  ListHeaderComponent={renderListHeader} // ここでヘッダーコンポーネントを指定
+  renderItem={({ item }) => (
+    <TouchableOpacity style={styles.card} onPress={() => Linking.openURL(item.post)}>
+      <Image source={{ uri: item.thumbnailUrl }} style={styles.cardImage} />
+      <Text style={styles.title}>{item.post}</Text> 
+    </TouchableOpacity>
+  )}
+/>
+
+
   );
 };
 
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     width: '100%',
-    height: 200, // 適宜調整
+    height: 100, // 適宜調整
     // その他のスタイリング
   },
   cardTitle: {

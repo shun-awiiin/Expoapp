@@ -12,6 +12,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import ChatScreen from './screens/ChatScreen';
 import ChatDetailScreen from './Chatsubscreen/ChatDetailScreen';
 import IndividualChatScreen from './Chatsubscreen/IndividualChatScreen';
+import RequestScreen from './screens/RequestScreen';
 
 
 // 他のスクリーンのインポートが必要な場合はここに追加
@@ -68,6 +69,16 @@ const MainContentStack = () => (
           <Ionicons name="chatbox-ellipses-outline" color={color} size={size} />
         ),
     
+      }}
+    />
+    <Tab.Screen
+      name="Request"
+      component={RequestScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="add-circle-outline" color={color} size={size} />
+        ),
+        // 他のオプション...
       }}
     />
     <Tab.Screen
