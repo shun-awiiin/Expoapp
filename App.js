@@ -10,9 +10,6 @@ import HomeScreen from './screens/HomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import VideoScreen from './screens/VideoLibraryScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import TacticsBoardScreen from './screens/TacticsBoardScreen'; // スクリーンをインポート
-import BoardScreen from './screens/BoardScreen'; // このパスはFeedbackScreenの場所に応じて変更してください
-import EditProfileScreen from './screens/EditProfileScreen'; // 適切なパスを使用
 import ChatScreen from './screens/ChatScreen';
 import ChatDetailScreen from './subscreen/ChatDetailScreen';
 import IndividualChatScreen from './subscreen/IndividualChatScreen';
@@ -28,14 +25,6 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const ProfileStack = createStackNavigator();
-
-const ProfileStackScreen = () => (
-  <ProfileStack.Navigator>
-    <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{headerShown: false, // これによりヘッダーが非表示になります
-  }} />
-    <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
-  </ProfileStack.Navigator>
-);
 
 // ChatStackを追加して、ChatScreenとChatDetailScreenのナビゲーションを管理します。
 const ChatStack = createStackNavigator();
@@ -81,24 +70,6 @@ const MainContentStack = () => (
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="videocam-outline" color={color} size={size} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="Tactics"
-      component={TacticsBoardScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="clipboard-outline" color={color} size={size} />
-        ),
-      }}
-    />
-     <Tab.Screen
-      name="Board"
-      component={BoardScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="chatbox-ellipses-outline" color={color} size={size} />
         ),
       }}
     />
